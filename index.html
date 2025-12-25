@@ -3,159 +3,109 @@
 <head>
 <meta charset="UTF-8">
 <title>Chill Zone Shop</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body{margin:0;font-family:Arial;background:#0f111a;color:#fff}
-header{background:#111;padding:15px}
-.topbar{display:flex;justify-content:space-between;align-items:center}
-button{background:#00ffd5;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:bold}
-.container{max-width:900px;margin:auto;padding:20px}
-.card{background:#1b1e2e;padding:15px;border-radius:10px;margin-bottom:15px}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center}
-.modal-box{background:#1b1e2e;padding:20px;border-radius:10px;width:340px}
-input{width:100%;padding:8px;margin:6px 0;border-radius:5px;border:none}
-#balanceBox{color:#0f0;font-weight:bold}
-.small{font-size:13px;color:#ccc}
+body{background:#0b0b0b;color:#fff;font-family:sans-serif}
+.box{background:#151515;padding:15px;border-radius:8px;width:300px;margin:20px auto}
+button{padding:8px 12px;border:0;border-radius:6px;background:#00ffc8;cursor:pointer}
+input{width:100%;padding:8px;margin:6px 0}
+.hidden{display:none}
 </style>
 </head>
-
 <body>
 
-<header>
-  <div class="topbar">
-    <b>🎮 Chill Zone</b>
-    <div style="display:flex;align-items:center;gap:8px">
-      <div id="balanceBox" style="display:none">
-        💰 <span id="balance">0</span> đ
-      </div>
-      <button id="topupBtn" style="display:none" onclick="openTopup()">Nạp tiền</button>
-      <div id="userBox">
-        <button onclick="openLogin()">Đăng nhập</button>
-        <button onclick="openRegister()">Đăng ký</button>
-      </div>
-    </div>
-  </div>
-</header>
-
-<div class="container">
-  <h2>🕹 Acc Roblox</h2>
-
-  <!-- ACC 001 -->
-  <div class="card">
-    <b>Acc Roblox #001</b><br>
-    Acc demo – free<br>
-    Giá: <b style="color:#0f0">0đ</b><br><br>
-    <button onclick="buyFree()">Mua acc</button>
-  </div>
+<div class="box" id="authBox">
+  <h3>Đăng nhập / Đăng ký</h3>
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Mật khẩu">
+  <button onclick="login()">Đăng nhập</button>
+  <button onclick="register()">Đăng ký</button>
 </div>
 
-<!-- LOGIN -->
-<div class="modal" id="loginModal">
-  <div class="modal-box">
-    <h3>Đăng nhập</h3>
-    <input id="loginEmail" placeholder="Email">
-    <input id="loginPass" type="password" placeholder="Mật khẩu">
-    <button onclick="login()">Đăng nhập</button>
+<div class="box hidden" id="userBox">
+  <h3>Xin chào <span id="userEmail"></span></h3>
+  <p>Số dư: <b id="balance">0</b> đ</p>
+  <button onclick="toggleNap()">Nạp tiền</button>
+
+  <div id="napBox" class="hidden">
+    <p><b>MB Bank</b></p>
+    <p>STK: <b>08999931122009</b></p>
+    <p>CTK: <b>NGUYEN NHAT TIEN</b></p>
+    <p>Nội dung: email đăng nhập</p>
   </div>
+
+  <hr>
+  <h4>Acc Roblox #001</h4>
+  <p>Giá: <b>0đ</b></p>
+  <button onclick="buyAcc()">Mua acc</button>
+
+  <div id="accInfo"></div>
 </div>
 
-<!-- REGISTER -->
-<div class="modal" id="registerModal">
-  <div class="modal-box">
-    <h3>Đăng ký</h3>
-    <input id="regEmail" placeholder="Email">
-    <input id="regPass" type="password" placeholder="Mật khẩu">
-    <button onclick="register()">Đăng ký</button>
-  </div>
-</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-<!-- TOPUP -->
-<div class="modal" id="topupModal">
-  <div class="modal-box">
-    <h3>💳 Nạp tiền</h3>
-    <p><b>Ngân hàng:</b> MB Bank</p>
-    <p><b>STK:</b> 08999931122009</p>
-    <p><b>Chủ TK:</b> NGUYEN NHAT TIEN</p>
-    <p class="small">Nội dung CK: <b>NAPTIEN &lt;EMAIL&gt;</b></p>
-  </div>
-</div>
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
-<script>
-firebase.initializeApp({
+const firebaseConfig = {
   apiKey: "AIzaSyBTt-dcspPCo-cTn_hOozD5BRM7GWicIJc",
   authDomain: "misakashop-4dd4e.firebaseapp.com",
   projectId: "misakashop-4dd4e",
-  storageBucket: "misakashop-4dd4e.appspot.com",
-  messagingSenderId: "714456225230",
-  appId: "1:714456225230:web:0d1f06b953e1c43833479f"
-});
+};
 
-const auth = firebase.auth();
-const db = firebase.firestore();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+const db = getFirestore();
 
-const loginModal = document.getElementById("loginModal");
-const registerModal = document.getElementById("registerModal");
-const topupModal = document.getElementById("topupModal");
+const authBox = document.getElementById("authBox");
 const userBox = document.getElementById("userBox");
-const balanceText = document.getElementById("balance");
-const balanceBox = document.getElementById("balanceBox");
-const topupBtn = document.getElementById("topupBtn");
+const balanceEl = document.getElementById("balance");
+const userEmailEl = document.getElementById("userEmail");
+const accInfo = document.getElementById("accInfo");
 
-function openLogin(){loginModal.style.display="flex"}
-function openRegister(){registerModal.style.display="flex"}
-function openTopup(){topupModal.style.display="flex"}
+window.register = async () => {
+  const email = email.value;
+  const password = password.value;
+  const res = await createUserWithEmailAndPassword(auth, email, password);
+  await setDoc(doc(db, "users", res.user.uid), {
+    email,
+    balance: 0
+  });
+};
 
-function register(){
-  auth.createUserWithEmailAndPassword(regEmail.value, regPass.value)
-  .then(cred=>{
-    return db.collection("users").doc(cred.user.uid).set({
-      email: cred.user.email,
-      balance: 0
-    });
-  }).then(()=>registerModal.style.display="none");
-}
+window.login = async () => {
+  await signInWithEmailAndPassword(auth, email.value, password.value);
+};
 
-function login(){
-  auth.signInWithEmailAndPassword(loginEmail.value, loginPass.value)
-  .then(()=>loginModal.style.display="none");
-}
+onAuthStateChanged(auth, async (user) => {
+  if (!user) return;
+  authBox.classList.add("hidden");
+  userBox.classList.remove("hidden");
+  userEmailEl.innerText = user.email;
 
-auth.onAuthStateChanged(user=>{
-  if(user){
-    userBox.innerHTML = `<b>${user.email}</b> <button onclick="auth.signOut()">Logout</button>`;
-    balanceBox.style.display="block";
-    topupBtn.style.display="inline-block";
-
-    db.collection("users").doc(user.uid)
-    .onSnapshot(doc=>{
-      if(doc.exists) balanceText.innerText = doc.data().balance.toLocaleString();
-    });
-  }
+  const snap = await getDoc(doc(db, "users", user.uid));
+  balanceEl.innerText = snap.data().balance;
 });
 
-function buyFree(){
+window.toggleNap = () => {
+  document.getElementById("napBox").classList.toggle("hidden");
+};
+
+window.buyAcc = async () => {
   const user = auth.currentUser;
-  if(!user){
-    alert("Vui lòng đăng nhập trước");
+  const ref = doc(db, "users", user.uid);
+  const snap = await getDoc(ref);
+
+  if (snap.data().balance < 0) {
+    alert("Không đủ tiền");
     return;
   }
 
-  alert(
-    "MUA ACC THÀNH CÔNG 🎉\n\n" +
-    "TK: tien2009\n" +
-    "MK: 2009"
-  );
-}
-
-window.onclick=e=>{
-  if(e.target.classList.contains("modal"))
-    e.target.style.display="none";
-}
+  accInfo.innerHTML = `
+    <hr>
+    <p><b>TK:</b> tien2009</p>
+    <p><b>MK:</b> 2009</p>
+  `;
+};
 </script>
 
 </body>
