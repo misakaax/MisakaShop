@@ -2,96 +2,102 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <title>Misaka Shop | Roblox Account Shop</title>
+  <title>Chill Zone | Roblox Account Shop</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body { margin:0; font-family: Arial, sans-serif; background:#0f0f14; color:#fff; }
-    header { padding:20px; text-align:center; background:#151521; }
+    header { padding:20px; text-align:center; background:#151521; position:relative; }
     header h1 { margin:0; font-size:32px; }
     header p { color:#aaa; }
 
+    .auth-btns { position:absolute; right:20px; top:20px; }
+    .auth-btns button { margin-left:8px; padding:6px 12px; border-radius:6px; border:none; cursor:pointer; }
+
     .container { max-width:1100px; margin:auto; padding:20px; }
-
     .accounts { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px; }
+    .card { background:#1b1b2a; border-radius:12px; padding:15px; }
+    .price { color:#00ffcc; font-weight:bold; }
+    .buy { display:block; margin-top:10px; text-align:center; padding:10px; border-radius:8px; background:#00ffcc; color:#000; text-decoration:none; }
 
-    .card { background:#1b1b2a; border-radius:12px; padding:15px; box-shadow:0 0 10px rgba(0,0,0,0.4); }
-    .card img { width:100%; border-radius:8px; }
-    .card h3 { margin:10px 0 5px; }
-    .card p { font-size:14px; color:#ccc; }
-    .price { color:#00ffcc; font-weight:bold; margin:8px 0; }
-    .buy { display:block; text-align:center; padding:10px; border-radius:8px; background:#00ffcc; color:#000; text-decoration:none; font-weight:bold; }
-    .buy:hover { background:#00ddb0; }
+    footer { background:#151521; padding:15px; text-align:center; color:#888; }
 
-    .section { margin-top:50px; }
-
-    footer { background:#151521; padding:15px; text-align:center; color:#888; font-size:14px; }
-
-    .note { background:#222235; padding:15px; border-radius:10px; color:#ccc; font-size:14px; }
+    /* Modal */
+    .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); align-items:center; justify-content:center; }
+    .modal-box { background:#1b1b2a; padding:20px; border-radius:12px; width:300px; }
+    .modal-box h3 { margin-top:0; }
+    .modal-box input { width:100%; padding:8px; margin:6px 0; border-radius:6px; border:none; }
+    .modal-box button { width:100%; padding:8px; margin-top:10px; border:none; border-radius:6px; background:#00ffcc; }
   </style>
 </head>
 <body>
 
 <header>
-  <h1>🎮 Misaka </h1>
-  <p>Roblox Account Shop • Giao dịch thủ công • An toàn</p>
+  <h1>🎮 Chill Zone</h1>
+  <p>Roblox Account Shop • Giao dịch thủ công</p>
+  <div class="auth-btns">
+    <button onclick="openLogin()">Đăng nhập</button>
+    <button onclick="openRegister()">Đăng ký</button>
+  </div>
 </header>
 
 <div class="container">
-
   <h2>🔥 Acc Roblox đang bán</h2>
   <div class="accounts">
-
     <div class="card">
-      <img src="https://via.placeholder.com/400x250" alt="acc roblox" />
       <h3>Acc Roblox #001</h3>
-      <p>Level: 120<br>Robux: 1,500<br>Gamepass hiếm</p>
+      <p>Level: 120<br>Robux: 1,500</p>
       <div class="price">150.000đ</div>
-      <a class="buy" href="#contact">Liên hệ mua</a>
-    </div>
-
-    <div class="card">
-      <img src="https://via.placeholder.com/400x250" alt="acc roblox" />
-      <h3>Acc Roblox #002</h3>
-      <p>Level: 80<br>Skin đẹp<br>Acc sạch</p>
-      <div class="price">90.000đ</div>
-      <a class="buy" href="#contact">Liên hệ mua</a>
-    </div>
-
-  </div>
-
-  <div class="section">
-    <h2>💳 Hướng dẫn thanh toán</h2>
-    <div class="note">
-      • Chuyển khoản ngân hàng / MoMo cá nhân<br>
-      • Nội dung: <b>NAP CZ + MÃ ACC</b><br>
-      • Thanh toán xong inbox admin để nhận acc<br>
-      • Không hỗ trợ hoàn tiền sau khi đã giao acc
+      <a class="buy" href="#">Liên hệ mua</a>
     </div>
   </div>
-
-  <div class="section" id="contact">
-    <h2>📩 Liên hệ</h2>
-    <div class="note">
-      Facebook: https://www.facebook.com/profile.php?id=61585153191116 <br>
-      Discord: chillzone#0001<br>
-      Thời gian online: 9h – 23h
-    </div>
-  </div>
-
-  <div class="section">
-    <h2>🛡️ Cam kết</h2>
-    <div class="note">
-      ✔ Acc đúng mô tả<br>
-      ✔ Không bán acc hack / scam<br>
-      ✔ Hỗ trợ đổi pass ngay sau giao dịch
-    </div>
-  </div>
-
 </div>
 
-<footer>
-  © 2025 Chill Zone • Mini shop giải trí
-</footer>
+<footer>© 2025 Chill Zone</footer>
+
+<!-- LOGIN -->
+<div class="modal" id="loginModal">
+  <div class="modal-box">
+    <h3>Đăng nhập</h3>
+    <input id="loginUser" placeholder="Tên đăng nhập" />
+    <input id="loginPass" type="password" placeholder="Mật khẩu" />
+    <button onclick="login()">Đăng nhập</button>
+  </div>
+</div>
+
+<!-- REGISTER -->
+<div class="modal" id="registerModal">
+  <div class="modal-box">
+    <h3>Đăng ký</h3>
+    <input id="regUser" placeholder="Tên đăng nhập" />
+    <input id="regPass" type="password" placeholder="Mật khẩu" />
+    <button onclick="register()">Đăng ký</button>
+  </div>
+</div>
+
+<script>
+  function openLogin(){ document.getElementById('loginModal').style.display='flex'; }
+  function openRegister(){ document.getElementById('registerModal').style.display='flex'; }
+
+  function register(){
+    const u = regUser.value, p = regPass.value;
+    if(!u||!p) return alert('Nhập đủ thông tin');
+    localStorage.setItem('user_'+u, p);
+    alert('Đăng ký thành công');
+    registerModal.style.display='none';
+  }
+
+  function login(){
+    const u = loginUser.value, p = loginPass.value;
+    if(localStorage.getItem('user_'+u) === p){
+      alert('Đăng nhập thành công');
+      loginModal.style.display='none';
+    } else alert('Sai tài khoản');
+  }
+
+  window.onclick = e => {
+    if(e.target.classList.contains('modal')) e.target.style.display='none';
+  }
+</script>
 
 </body>
 </html>
