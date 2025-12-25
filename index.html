@@ -3,38 +3,66 @@
 <head>
   <meta charset="UTF-8" />
   <title>Chill Zone | Roblox Account Shop</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { margin:0; font-family: Arial, sans-serif; background:#0f0f14; color:#fff; }
-    header { padding:20px; text-align:center; background:#151521; position:relative; }
-    header h1 { margin:0; font-size:32px; }
-    header p { color:#aaa; }
-
-    .auth-btns { position:absolute; right:20px; top:20px; }
-    .auth-btns button { margin-left:8px; padding:6px 12px; border-radius:6px; border:none; cursor:pointer; }
-
-    .container { max-width:1100px; margin:auto; padding:20px; }
-    .accounts { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px; }
-    .card { background:#1b1b2a; border-radius:12px; padding:15px; }
-    .price { color:#00ffcc; font-weight:bold; }
-    .buy { display:block; margin-top:10px; text-align:center; padding:10px; border-radius:8px; background:#00ffcc; color:#000; text-decoration:none; }
-
-    footer { background:#151521; padding:15px; text-align:center; color:#888; }
-
-    /* Modal */
-    .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); align-items:center; justify-content:center; }
-    .modal-box { background:#1b1b2a; padding:20px; border-radius:12px; width:300px; }
-    .modal-box h3 { margin-top:0; }
-    .modal-box input { width:100%; padding:8px; margin:6px 0; border-radius:6px; border:none; }
-    .modal-box button { width:100%; padding:8px; margin-top:10px; border:none; border-radius:6px; background:#00ffcc; }
+    body {
+      background:#0f111a;
+      color:#fff;
+      font-family:Arial;
+      margin:0;
+    }
+    header {
+      padding:20px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      background:#111;
+    }
+    button {
+      background:#00ffd5;
+      border:none;
+      padding:8px 14px;
+      border-radius:6px;
+      cursor:pointer;
+      font-weight:bold;
+    }
+    .container { padding:20px; max-width:900px; margin:auto; }
+    .card {
+      background:#1b1e2e;
+      padding:15px;
+      border-radius:10px;
+      margin-bottom:15px;
+    }
+    .modal {
+      position:fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      background:rgba(0,0,0,.6);
+      display:none;
+      align-items:center;
+      justify-content:center;
+    }
+    .modal-box {
+      background:#1b1e2e;
+      padding:20px;
+      border-radius:10px;
+      width:300px;
+    }
+    input {
+      width:100%;
+      padding:8px;
+      margin:6px 0;
+      border-radius:5px;
+      border:none;
+    }
   </style>
 </head>
+
 <body>
 
 <header>
-  <h1>🎮 Chill Zone</h1>
-  <p>Roblox Account Shop • Giao dịch thủ công</p>
-  <div class="auth-btns">
+  <b>🎮 Chill Zone</b>
+  <div id="userBox">
     <button onclick="openLogin()">Đăng nhập</button>
     <button onclick="openRegister()">Đăng ký</button>
   </div>
@@ -42,24 +70,28 @@
 
 <div class="container">
   <h2>🔥 Acc Roblox đang bán</h2>
-  <div class="accounts">
-    <div class="card">
-      <h3>Acc Roblox #001</h3>
-      <p>Level: 120<br>Robux: 1,500</p>
-      <div class="price">150.000đ</div>
-      <a class="buy" href="#">Liên hệ mua</a>
-    </div>
+
+  <div class="card">
+    <b>Acc Roblox #001</b><br>
+    Level: 120 – Robux: 1500<br>
+    Giá: 150.000đ<br><br>
+    <button onclick="buy()">Liên hệ mua</button>
+  </div>
+
+  <div class="card">
+    <b>Acc Roblox #002</b><br>
+    Level: 80 – Acc sạch<br>
+    Giá: 90.000đ<br><br>
+    <button onclick="buy()">Liên hệ mua</button>
   </div>
 </div>
-
-<footer>© 2025 Chill Zone</footer>
 
 <!-- LOGIN -->
 <div class="modal" id="loginModal">
   <div class="modal-box">
     <h3>Đăng nhập</h3>
-    <input id="loginUser" placeholder="Tên đăng nhập" />
-    <input id="loginPass" type="password" placeholder="Mật khẩu" />
+    <input id="loginEmail" placeholder="Email">
+    <input id="loginPass" type="password" placeholder="Mật khẩu">
     <button onclick="login()">Đăng nhập</button>
   </div>
 </div>
@@ -68,34 +100,80 @@
 <div class="modal" id="registerModal">
   <div class="modal-box">
     <h3>Đăng ký</h3>
-    <input id="regUser" placeholder="Tên đăng nhập" />
-    <input id="regPass" type="password" placeholder="Mật khẩu" />
+    <input id="regEmail" placeholder="Email">
+    <input id="regPass" type="password" placeholder="Mật khẩu">
     <button onclick="register()">Đăng ký</button>
   </div>
 </div>
 
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
 <script>
-  function openLogin(){ document.getElementById('loginModal').style.display='flex'; }
-  function openRegister(){ document.getElementById('registerModal').style.display='flex'; }
+  const firebaseConfig = {
+    apiKey: "AIzaSyBTt-dcspPCo-cTn_hOozD5BRM7GWicIJc",
+    authDomain: "misakashop-4dd4e.firebaseapp.com",
+    projectId: "misakashop-4dd4e",
+    storageBucket: "misakashop-4dd4e.appspot.com",
+    messagingSenderId: "714456225230",
+    appId: "1:714456225230:web:0d1f06b953e1c43833479f"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+
+  const loginModal = document.getElementById("loginModal");
+  const registerModal = document.getElementById("registerModal");
+  const userBox = document.getElementById("userBox");
+
+  function openLogin(){ loginModal.style.display="flex"; }
+  function openRegister(){ registerModal.style.display="flex"; }
 
   function register(){
-    const u = regUser.value, p = regPass.value;
-    if(!u||!p) return alert('Nhập đủ thông tin');
-    localStorage.setItem('user_'+u, p);
-    alert('Đăng ký thành công');
-    registerModal.style.display='none';
+    auth.createUserWithEmailAndPassword(
+      regEmail.value,
+      regPass.value
+    ).then(()=>{
+      alert("Đăng ký thành công");
+      registerModal.style.display="none";
+    }).catch(e=>alert(e.message));
   }
 
   function login(){
-    const u = loginUser.value, p = loginPass.value;
-    if(localStorage.getItem('user_'+u) === p){
-      alert('Đăng nhập thành công');
-      loginModal.style.display='none';
-    } else alert('Sai tài khoản');
+    auth.signInWithEmailAndPassword(
+      loginEmail.value,
+      loginPass.value
+    ).then(()=>{
+      alert("Đăng nhập thành công");
+      loginModal.style.display="none";
+    }).catch(e=>alert(e.message));
   }
 
-  window.onclick = e => {
-    if(e.target.classList.contains('modal')) e.target.style.display='none';
+  auth.onAuthStateChanged(user=>{
+    if(user){
+      userBox.innerHTML = `<b>${user.email}</b> 
+      <button onclick="logout()">Logout</button>`;
+    }
+  });
+
+  function logout(){
+    auth.signOut();
+    location.reload();
+  }
+
+  function buy(){
+    if(!auth.currentUser){
+      alert("Vui lòng đăng nhập trước");
+    } else {
+      alert("Liên hệ admin để mua acc");
+    }
+  }
+
+  window.onclick = e=>{
+    if(e.target.classList.contains("modal"))
+      e.target.style.display="none";
   }
 </script>
 
