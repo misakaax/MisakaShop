@@ -11,9 +11,10 @@ button{background:#00ffd5;border:none;padding:6px 12px;border-radius:6px;cursor:
 .container{max-width:900px;margin:auto;padding:20px}
 .card{background:#1b1e2e;padding:15px;border-radius:10px;margin-bottom:15px}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center}
-.modal-box{background:#1b1e2e;padding:20px;border-radius:10px;width:300px}
+.modal-box{background:#1b1e2e;padding:20px;border-radius:10px;width:320px}
 input{width:100%;padding:8px;margin:6px 0;border-radius:5px;border:none}
-#balanceBox{color:#0f0;font-weight:bold;margin-right:10px}
+#balanceBox{color:#0f0;font-weight:bold}
+.small{font-size:13px;color:#ccc}
 </style>
 </head>
 
@@ -21,7 +22,7 @@ input{width:100%;padding:8px;margin:6px 0;border-radius:5px;border:none}
 
 <header>
   <b>🎮 Chill Zone</b>
-  <div style="display:flex;align-items:center;gap:8px">
+  <div style="display:flex;align-items:center;gap:10px">
     <div id="balanceBox" style="display:none">
       💰 <span id="balance">0</span> đ
     </div>
@@ -33,7 +34,20 @@ input{width:100%;padding:8px;margin:6px 0;border-radius:5px;border:none}
 </header>
 
 <div class="container">
-  <h2>Acc Roblox</h2>
+
+  <div class="card">
+    <h3>💳 Nạp tiền</h3>
+    <p><b>Ngân hàng:</b> MB Bank</p>
+    <p><b>Số tài khoản:</b> 08999931122009</p>
+    <p><b>Chủ tài khoản:</b> NGUYEN NHAT TIEN</p>
+    <p class="small">
+      Nội dung chuyển khoản:<br>
+      <b>NAPTIEN &lt;EMAIL_DANG_NHAP&gt;</b>
+    </p>
+    <button onclick="confirmTopup()">Tôi đã chuyển khoản</button>
+  </div>
+
+  <h2>🕹 Acc Roblox</h2>
 
   <div class="card">
     <b>Acc Roblox #001</b><br>
@@ -48,6 +62,7 @@ input{width:100%;padding:8px;margin:6px 0;border-radius:5px;border:none}
     Giá: 70.000đ<br><br>
     <button onclick="buy(70000)">Mua acc</button>
   </div>
+
 </div>
 
 <!-- LOGIN -->
@@ -114,9 +129,8 @@ function register(){
 
 function login(){
   auth.signInWithEmailAndPassword(loginEmail.value, loginPass.value)
-  .then(()=>{
-    loginModal.style.display="none";
-  }).catch(e=>alert(e.message));
+  .then(()=> loginModal.style.display="none")
+  .catch(e=>alert(e.message));
 }
 
 function logout(){
@@ -133,8 +147,7 @@ auth.onAuthStateChanged(user=>{
     db.collection("users").doc(user.uid)
     .onSnapshot(doc=>{
       if(doc.exists){
-        balanceText.innerText =
-          doc.data().balance.toLocaleString();
+        balanceText.innerText = doc.data().balance.toLocaleString();
       }
     });
   }
@@ -142,21 +155,28 @@ auth.onAuthStateChanged(user=>{
 
 function buy(price){
   const user = auth.currentUser;
-  if(!user){
-    alert("Vui lòng đăng nhập");
-    return;
-  }
+  if(!user){ alert("Vui lòng đăng nhập"); return; }
 
   const ref = db.collection("users").doc(user.uid);
   ref.get().then(doc=>{
     let bal = doc.data().balance;
-    if(bal < price){
-      alert("Không đủ số dư");
-      return;
-    }
+    if(bal < price){ alert("Không đủ số dư"); return; }
     ref.update({ balance: bal - price });
     alert("Mua acc thành công (demo)");
   });
+}
+
+function confirmTopup(){
+  const user = auth.currentUser;
+  if(!user){
+    alert("Vui lòng đăng nhập trước khi nạp tiền");
+    return;
+  }
+  alert(
+`Đã ghi nhận yêu cầu nạp tiền!
+Vui lòng chờ admin kiểm tra chuyển khoản.
+Email: ${user.email}`
+  );
 }
 
 window.onclick = e=>{
