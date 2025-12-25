@@ -16,7 +16,6 @@ button{background:#00ffd5;border:none;padding:6px 12px;border-radius:6px;cursor:
 input{width:100%;padding:8px;margin:6px 0;border-radius:5px;border:none}
 #balanceBox{color:#0f0;font-weight:bold}
 .small{font-size:13px;color:#ccc}
-hr{border:1px solid #333}
 </style>
 </head>
 
@@ -41,18 +40,12 @@ hr{border:1px solid #333}
 <div class="container">
   <h2>🕹 Acc Roblox</h2>
 
+  <!-- ACC 001 -->
   <div class="card">
-    <b>Acc Roblox VIP</b><br>
-    TK: roblox_vip_01<br>
-    Giá: 100.000đ<br><br>
-    <button onclick="buy(100000,'roblox_vip_01','vip123')">Mua acc</button>
-  </div>
-
-  <div class="card">
-    <b>Acc Roblox Thường</b><br>
-    TK: roblox_normal_02<br>
-    Giá: 70.000đ<br><br>
-    <button onclick="buy(70000,'roblox_normal_02','normal123')">Mua acc</button>
+    <b>Acc Roblox #001</b><br>
+    Acc demo – free<br>
+    Giá: <b style="color:#0f0">0đ</b><br><br>
+    <button onclick="buyFree()">Mua acc</button>
   </div>
 </div>
 
@@ -84,15 +77,6 @@ hr{border:1px solid #333}
     <p><b>STK:</b> 08999931122009</p>
     <p><b>Chủ TK:</b> NGUYEN NHAT TIEN</p>
     <p class="small">Nội dung CK: <b>NAPTIEN &lt;EMAIL&gt;</b></p>
-    <button onclick="openHistory()">📜 Lịch sử giao dịch</button>
-  </div>
-</div>
-
-<!-- HISTORY -->
-<div class="modal" id="historyModal">
-  <div class="modal-box">
-    <h3>📜 Lịch sử giao dịch</h3>
-    <div id="historyList" style="max-height:300px;overflow:auto"></div>
   </div>
 </div>
 
@@ -117,8 +101,6 @@ const db = firebase.firestore();
 const loginModal = document.getElementById("loginModal");
 const registerModal = document.getElementById("registerModal");
 const topupModal = document.getElementById("topupModal");
-const historyModal = document.getElementById("historyModal");
-const historyList = document.getElementById("historyList");
 const userBox = document.getElementById("userBox");
 const balanceText = document.getElementById("balance");
 const balanceBox = document.getElementById("balanceBox");
@@ -133,8 +115,7 @@ function register(){
   .then(cred=>{
     return db.collection("users").doc(cred.user.uid).set({
       email: cred.user.email,
-      balance: 0,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      balance: 0
     });
   }).then(()=>registerModal.style.display="none");
 }
@@ -157,53 +138,23 @@ auth.onAuthStateChanged(user=>{
   }
 });
 
-function buy(price,accUser,accPass){
+function buyFree(){
   const user = auth.currentUser;
-  if(!user){alert("Đăng nhập trước");return;}
+  if(!user){
+    alert("Vui lòng đăng nhập trước");
+    return;
+  }
 
-  const ref = db.collection("users").doc(user.uid);
-  ref.get().then(doc=>{
-    let bal = doc.data().balance;
-    if(bal < price){alert("Không đủ số dư");return;}
-
-    ref.update({balance: bal - price});
-    ref.collection("transactions").add({
-      username: accUser,
-      password: accPass,
-      price: price,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    alert(`MUA THÀNH CÔNG\nTK: ${accUser}\nMK: ${accPass}`);
-  });
-}
-
-function openHistory(){
-  const user = auth.currentUser;
-  historyModal.style.display="flex";
-  historyList.innerHTML="";
-
-  db.collection("users").doc(user.uid)
-  .collection("transactions")
-  .orderBy("createdAt","desc")
-  .onSnapshot(snap=>{
-    historyList.innerHTML="";
-    snap.forEach(d=>{
-      let x=d.data();
-      let t=x.createdAt?x.createdAt.toDate().toLocaleString():"";
-      historyList.innerHTML+=`
-        <div style="border-bottom:1px solid #333;padding:6px 0">
-        🕒 ${t}<br>
-        💸 ${x.price.toLocaleString()} đ<br>
-        👤 ${x.username}<br>
-        🔑 ${x.password}
-        </div>`;
-    });
-  });
+  alert(
+    "MUA ACC THÀNH CÔNG 🎉\n\n" +
+    "TK: tien2009\n" +
+    "MK: 2009"
+  );
 }
 
 window.onclick=e=>{
-  if(e.target.classList.contains("modal")) e.target.style.display="none";
+  if(e.target.classList.contains("modal"))
+    e.target.style.display="none";
 }
 </script>
 
