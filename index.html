@@ -16,7 +16,6 @@ button{background:#00ffd5;border:none;padding:6px 12px;border-radius:6px;cursor:
 input{width:100%;padding:8px;margin:6px 0;border-radius:5px;border:none}
 #balanceBox{color:#0f0;font-weight:bold}
 .small{font-size:13px;color:#ccc}
-#topupBox{display:none;margin-top:10px}
 </style>
 </head>
 
@@ -25,28 +24,16 @@ input{width:100%;padding:8px;margin:6px 0;border-radius:5px;border:none}
 <header>
   <div class="topbar">
     <b>🎮 Chill Zone</b>
-    <div style="display:flex;align-items:center;gap:10px">
+    <div style="display:flex;align-items:center;gap:8px">
       <div id="balanceBox" style="display:none">
         💰 <span id="balance">0</span> đ
       </div>
+      <button id="topupBtn" style="display:none" onclick="openTopup()">Nạp tiền</button>
       <div id="userBox">
         <button onclick="openLogin()">Đăng nhập</button>
         <button onclick="openRegister()">Đăng ký</button>
       </div>
     </div>
-  </div>
-
-  <!-- NẠP TIỀN (NGAY DƯỚI SỐ DƯ) -->
-  <div id="topupBox" class="card">
-    <h3>💳 Nạp tiền</h3>
-    <p><b>Ngân hàng:</b> MB Bank</p>
-    <p><b>Số tài khoản:</b> 08999931122009</p>
-    <p><b>Chủ tài khoản:</b> NGUYEN NHAT TIEN</p>
-    <p class="small">
-      Nội dung chuyển khoản:<br>
-      <b>NAPTIEN &lt;EMAIL_DANG_NHAP&gt;</b>
-    </p>
-    <button onclick="confirmTopup()">Tôi đã chuyển khoản</button>
   </div>
 </header>
 
@@ -88,6 +75,21 @@ input{width:100%;padding:8px;margin:6px 0;border-radius:5px;border:none}
   </div>
 </div>
 
+<!-- TOPUP POPUP -->
+<div class="modal" id="topupModal">
+  <div class="modal-box">
+    <h3>💳 Nạp tiền</h3>
+    <p><b>Ngân hàng:</b> MB Bank</p>
+    <p><b>STK:</b> 08999931122009</p>
+    <p><b>Chủ TK:</b> NGUYEN NHAT TIEN</p>
+    <p class="small">
+      Nội dung chuyển khoản:<br>
+      <b>NAPTIEN &lt;EMAIL_DANG_NHAP&gt;</b>
+    </p>
+    <button onclick="confirmTopup()">Tôi đã chuyển khoản</button>
+  </div>
+</div>
+
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -109,13 +111,15 @@ const db = firebase.firestore();
 
 const loginModal = document.getElementById("loginModal");
 const registerModal = document.getElementById("registerModal");
+const topupModal = document.getElementById("topupModal");
 const userBox = document.getElementById("userBox");
 const balanceBox = document.getElementById("balanceBox");
 const balanceText = document.getElementById("balance");
-const topupBox = document.getElementById("topupBox");
+const topupBtn = document.getElementById("topupBtn");
 
 function openLogin(){loginModal.style.display="flex"}
 function openRegister(){registerModal.style.display="flex"}
+function openTopup(){topupModal.style.display="flex"}
 
 function register(){
   auth.createUserWithEmailAndPassword(regEmail.value, regPass.value)
@@ -147,7 +151,7 @@ auth.onAuthStateChanged(user=>{
     userBox.innerHTML = `<b>${user.email}</b>
     <button onclick="logout()">Logout</button>`;
     balanceBox.style.display="block";
-    topupBox.style.display="block";
+    topupBtn.style.display="inline-block";
 
     db.collection("users").doc(user.uid)
     .onSnapshot(doc=>{
@@ -173,15 +177,8 @@ function buy(price){
 
 function confirmTopup(){
   const user = auth.currentUser;
-  if(!user){
-    alert("Vui lòng đăng nhập trước khi nạp tiền");
-    return;
-  }
-  alert(
-`Đã ghi nhận yêu cầu nạp tiền!
-Admin sẽ kiểm tra chuyển khoản.
-Email: ${user.email}`
-  );
+  alert(`Đã ghi nhận yêu cầu nạp tiền cho ${user.email}`);
+  topupModal.style.display="none";
 }
 
 window.onclick = e=>{
