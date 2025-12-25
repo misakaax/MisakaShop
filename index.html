@@ -6,7 +6,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body{margin:0;font-family:Arial;background:#0f111a;color:#fff}
-header{background:#111;padding:15px;display:flex;justify-content:space-between;align-items:center}
+header{background:#111;padding:15px}
+.topbar{display:flex;justify-content:space-between;align-items:center}
 button{background:#00ffd5;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:bold}
 .container{max-width:900px;margin:auto;padding:20px}
 .card{background:#1b1e2e;padding:15px;border-radius:10px;margin-bottom:15px}
@@ -15,27 +16,28 @@ button{background:#00ffd5;border:none;padding:6px 12px;border-radius:6px;cursor:
 input{width:100%;padding:8px;margin:6px 0;border-radius:5px;border:none}
 #balanceBox{color:#0f0;font-weight:bold}
 .small{font-size:13px;color:#ccc}
+#topupBox{display:none;margin-top:10px}
 </style>
 </head>
 
 <body>
 
 <header>
-  <b>🎮 Chill Zone</b>
-  <div style="display:flex;align-items:center;gap:10px">
-    <div id="balanceBox" style="display:none">
-      💰 <span id="balance">0</span> đ
-    </div>
-    <div id="userBox">
-      <button onclick="openLogin()">Đăng nhập</button>
-      <button onclick="openRegister()">Đăng ký</button>
+  <div class="topbar">
+    <b>🎮 Chill Zone</b>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div id="balanceBox" style="display:none">
+        💰 <span id="balance">0</span> đ
+      </div>
+      <div id="userBox">
+        <button onclick="openLogin()">Đăng nhập</button>
+        <button onclick="openRegister()">Đăng ký</button>
+      </div>
     </div>
   </div>
-</header>
 
-<div class="container">
-
-  <div class="card">
+  <!-- NẠP TIỀN (NGAY DƯỚI SỐ DƯ) -->
+  <div id="topupBox" class="card">
     <h3>💳 Nạp tiền</h3>
     <p><b>Ngân hàng:</b> MB Bank</p>
     <p><b>Số tài khoản:</b> 08999931122009</p>
@@ -46,7 +48,9 @@ input{width:100%;padding:8px;margin:6px 0;border-radius:5px;border:none}
     </p>
     <button onclick="confirmTopup()">Tôi đã chuyển khoản</button>
   </div>
+</header>
 
+<div class="container">
   <h2>🕹 Acc Roblox</h2>
 
   <div class="card">
@@ -62,7 +66,6 @@ input{width:100%;padding:8px;margin:6px 0;border-radius:5px;border:none}
     Giá: 70.000đ<br><br>
     <button onclick="buy(70000)">Mua acc</button>
   </div>
-
 </div>
 
 <!-- LOGIN -->
@@ -109,6 +112,7 @@ const registerModal = document.getElementById("registerModal");
 const userBox = document.getElementById("userBox");
 const balanceBox = document.getElementById("balanceBox");
 const balanceText = document.getElementById("balance");
+const topupBox = document.getElementById("topupBox");
 
 function openLogin(){loginModal.style.display="flex"}
 function openRegister(){registerModal.style.display="flex"}
@@ -143,6 +147,7 @@ auth.onAuthStateChanged(user=>{
     userBox.innerHTML = `<b>${user.email}</b>
     <button onclick="logout()">Logout</button>`;
     balanceBox.style.display="block";
+    topupBox.style.display="block";
 
     db.collection("users").doc(user.uid)
     .onSnapshot(doc=>{
@@ -174,7 +179,7 @@ function confirmTopup(){
   }
   alert(
 `Đã ghi nhận yêu cầu nạp tiền!
-Vui lòng chờ admin kiểm tra chuyển khoản.
+Admin sẽ kiểm tra chuyển khoản.
 Email: ${user.email}`
   );
 }
